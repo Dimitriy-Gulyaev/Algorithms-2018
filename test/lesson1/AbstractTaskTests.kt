@@ -4,6 +4,7 @@ import java.io.BufferedWriter
 import java.io.File
 import java.util.*
 import kotlin.math.abs
+import kotlin.test.assertEquals
 
 abstract class AbstractTaskTests : AbstractFileTests() {
 
@@ -39,6 +40,22 @@ abstract class AbstractTaskTests : AbstractFileTests() {
         } finally {
             File("temp.txt").delete()
         }
+        try {
+            lesson1.sortTimes("input/time_in4.txt", "temp.txt")
+        } catch (e: IllegalArgumentException) {
+            assertEquals("wrong format", e.message)
+        } finally {
+            File("temp.txt").delete()
+        }
+        try {
+            sortTimes("input/empty.txt", "temp.txt")
+            assertFileContent("temp.txt",
+                    """
+                """.trimIndent()
+            )
+        } finally {
+            File("temp.txt").delete()
+        }
     }
 
     protected fun sortAddresses(sortAddresses: (String, String) -> Unit) {
@@ -55,7 +72,15 @@ abstract class AbstractTaskTests : AbstractFileTests() {
         } finally {
             File("temp.txt").delete()
         }
+        try {
+            lesson1.sortAddresses("input/time_in4.txt", "temp.txt")
+        } catch (e: IllegalArgumentException) {
+            assertEquals("wrong format", e.message)
+        } finally {
+            File("temp.txt").delete()
+        }
     }
+
 
     private fun generateTemperatures(size: Int) {
         val random = Random()
@@ -98,6 +123,15 @@ abstract class AbstractTaskTests : AbstractFileTests() {
         } finally {
             File("temp.txt").delete()
         }
+        try {
+            sortTemperatures("input/empty.txt", "temp.txt")
+            assertFileContent("temp.txt",
+                    """
+                """.trimIndent()
+            )
+        } finally {
+            File("temp.txt").delete()
+        }
 
         fun testGeneratedTemperatures(size: Int) {
             try {
@@ -113,7 +147,7 @@ abstract class AbstractTaskTests : AbstractFileTests() {
             }
         }
         testGeneratedTemperatures(10)
-        testGeneratedTemperatures(5000)
+        testGeneratedTemperatures(100)
     }
 
     protected fun sortSequence(sortSequence: (String, String) -> Unit) {

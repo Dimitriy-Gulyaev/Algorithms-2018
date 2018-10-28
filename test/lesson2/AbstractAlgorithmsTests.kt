@@ -77,6 +77,7 @@ abstract class AbstractAlgorithmsTests {
         assertEquals("", longestCommonSubstring("мой мир", "я"))
         assertEquals("зд", longestCommonSubstring("здравствуй мир", "мы здесь"))
         assertEquals("СЕРВАТОР", longestCommonSubstring("ОБСЕРВАТОРИЯ", "КОНСЕРВАТОРЫ"))
+        assertEquals("шумбра", longestCommonSubstring("шумбра-мумбра", "мумбра-шумбра"))
         assertEquals("огда ", longestCommonSubstring(
                 """
 Мой дядя самых честных правил,
@@ -674,6 +675,26 @@ abstract class AbstractAlgorithmsTests {
 
     fun baldaSearcher(baldaSearcher: (String, Set<String>) -> Set<String>) {
         assertEquals(setOf("ТРАВА", "КРАН", "АКВА", "НАРТЫ"),
-                baldaSearcher("input/balda_in1.txt", setOf("ТРАВА", "КРАН", "АКВА", "НАРТЫ", "РАК")))
+                JavaAlgorithms.baldaSearcher("input/balda_in1.txt", setOf("ТРАВА", "КРАН", "АКВА",
+                        "НАРТЫ", "РАК")))
+        assertEquals(setOf(),
+                JavaAlgorithms.baldaSearcher("input/balda_in1.txt", setOf("КАРДАМОН", "ЧАЙНИК", "ЧАШКА")))
+        assertEquals(setOf("DOG", "FISH", "BONE"),
+                JavaAlgorithms.baldaSearcher("input/balda_in3.txt", setOf("DOG", "FISH", "BONE", "CAT")))
+        try {
+            lesson2.JavaAlgorithms.baldaSearcher("input/time_in4.txt", setOf("КАРДАМОН", "ЧАЙНИК", "ЧАШКА"))
+        } catch (e: IllegalArgumentException) {
+            assertEquals("wrong format", e.message)
+        }
+        try {
+            lesson2.JavaAlgorithms.baldaSearcher("input/balda_in1.txt", setOf("1234235ппппп"))
+        } catch (e: IllegalArgumentException) {
+            assertEquals("wrong format", e.message)
+        }
+        try {
+            lesson2.JavaAlgorithms.baldaSearcher("input/balda_in2.txt", setOf("КАРДАМОН", "ЧАЙНИК", "ЧАШКА"))
+        } catch (e: IllegalArgumentException) {
+            assertEquals("wrong format", e.message)
+        }
     }
 }
