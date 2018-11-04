@@ -40,21 +40,17 @@ public class JavaTasks {
      */
 
     // T = O(N logN), R = O(N)
-    static public void sortTimes(String inputName, String outputName) {
-        try {
-            Scanner scanner = new Scanner(new File(inputName));
-            ArrayList<Integer> list = new ArrayList<>();
-            while (scanner.hasNextLine()) {
-                String t = scanner.nextLine();
-                if (!t.matches("[0-9][0-9]:[0-9][0-9]:[0-9][0-9]"))
-                    throw new IllegalArgumentException("wrong format");
-                list.add(Integer.parseInt(t.replaceAll(":", "")));
-            }
-            Collections.sort(list);
-            JavaTasks.dateWriter(outputName, list);
-        } catch (IOException e) {
-            e.printStackTrace();
+    static public void sortTimes(String inputName, String outputName) throws IOException {
+        Scanner scanner = new Scanner(new File(inputName));
+        ArrayList<Integer> list = new ArrayList<>();
+        while (scanner.hasNextLine()) {
+            String t = scanner.nextLine();
+            if (!t.matches("[0-9][0-9]:[0-9][0-9]:[0-9][0-9]"))
+                throw new IllegalArgumentException("wrong format");
+            list.add(Integer.parseInt(t.replaceAll(":", "")));
         }
+        Collections.sort(list);
+        JavaTasks.dateWriter(outputName, list);
     }
 
     static private void dateWriter(String outputName, ArrayList<Integer> list) throws IOException {
