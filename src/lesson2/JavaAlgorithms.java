@@ -172,7 +172,7 @@ public class JavaAlgorithms {
      * Остальные символы ни в файле, ни в словах не допускаются.
      */
 
-    // T = O(N^2), R = O(N)
+    // T = O(m * n * 4^w), R = O(n*m), где n и m - размеры поля, w - количество искомых слов
     static public Set<String> baldaSearcher(String inputName, Set<String> words) {
         for (String word : words) {
             if (!word.matches("[A-Z]+|[А-Я]+")) throw new IllegalArgumentException("wrong format");
@@ -194,11 +194,13 @@ public class JavaAlgorithms {
         }
         JavaAlgorithms.checkIfMatrix(matrix);
         final Set<String> result = new TreeSet<>();
+        int lastFoundi = 0;
+        int lastFoundj = 0;
 
         // Запускаем рекурсивный поиск совпадений по "соседям" для каждого элемента матрицы
         for (int i = 0; i < matrix.size(); i++) {
             for (int j = 0; j < matrix.get(0).length; j++) {
-                searchRecursive(matrix, i, j, matrix.get(i)[j], result, dictionary);
+                searchRecursive(matrix, i, j, matrix.get(i)[j], result, dictionary, lastFoundi, lastFoundj);
             }
         }
         return result;
@@ -212,12 +214,12 @@ public class JavaAlgorithms {
 
     // Рекурсивный алгоритм поиска по "соседям" с исключенными диагоналями
     static private void searchRecursive(ArrayList<String[]> matrix, int i, int j, String prefix, Set<String> result,
-                                        TreeSet<String> dictionary) {
+                                        TreeSet<String> dictionary, int lastFoundi, int lastFoundj) {
 
         for (int i1 = Math.max(0, i - 1); i1 < Math.min(matrix.size(), i + 2); i1++) {
             for (int j1 = Math.max(0, j - 1); j1 < Math.min(matrix.get(0).length, j + 2); j1++) {
                 if (abs(i - i1) + abs(j - j1) == 2) continue;
-                if (i1 != i || j1 != j) {
+                if ((i1 != i || j1 != j) && (i1 != lastFoundi || j1 != lastFoundj)) {
                     String word = prefix + matrix.get(i1)[j1];
 
                     if (dictionary.contains(word)) {
@@ -225,7 +227,9 @@ public class JavaAlgorithms {
                     }
 
                     if (dictionary.subSet(word, word + Character.MAX_VALUE).size() > 0) {
-                        searchRecursive(matrix, i1, j1, word, result, dictionary);
+                        lastFoundi = i;
+                        lastFoundj = j;
+                        searchRecursive(matrix, i1, j1, word, result, dictionary, lastFoundi, lastFoundj);
                     }
                 }
             }

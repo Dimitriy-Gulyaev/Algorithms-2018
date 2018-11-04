@@ -6,7 +6,6 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.*;
-import java.util.regex.*;
 
 
 @SuppressWarnings("unused")
@@ -58,21 +57,12 @@ public class JavaTasks {
         }
     }
 
-    static private void dateWriter(String outputName, ArrayList<Integer> list) {
-        try {
-            FileWriter writer = new FileWriter(outputName);
-            for (Integer element : list) {
-                StringBuilder temp =
-                        new StringBuilder(element.toString());
-                while (temp.length() < 6) {
-                    temp.insert(0, "0");
-                }
-                temp.insert(2, ":").insert(5, ":");
-                writer.write(temp.toString() + "\n");
-                writer.flush();
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
+    static private void dateWriter(String outputName, ArrayList<Integer> list) throws IOException {
+        FileWriter writer = new FileWriter(outputName);
+        for (Integer element : list) {
+            writer.write(String.format("%d%d:%d%d:%d%d%n", element / 100000, element / 10000 % 10,
+                    element % 10000 / 1000, element % 1000 / 100, element % 100 / 10, element % 10));
+            writer.flush();
         }
     }
 
@@ -103,45 +93,37 @@ public class JavaTasks {
      * В случае обнаружения неверного формата файла бросить любое исключение.
      */
 
-    // T = O(logN), R = O(N)
-    static public void sortAddresses(String inputName, String outputName) {
-        try {
-            Scanner scanner = new Scanner(new File(inputName));
-            Map<String, Set<String>> map = new TreeMap<>();
-            while (scanner.hasNextLine()) {
-                String t = scanner.nextLine();
-                if (!t.matches("[А-Я][а-я]+ [А-Я][а-я]+ - [А-Я][а-я]+ [0-9]+"))
-                    throw new IllegalArgumentException("wrong format");
-                String[] data = t.split(" - ");
-                if (map.containsKey(data[1]))
-                    map.get(data[1]).add(data[0]);
-                else {
-                    Set<String> set = new TreeSet<>();
-                    set.add(data[0]);
-                    map.put(data[1], set);
-                }
+    // T = O(N), R = O(N)
+    static public void sortAddresses(String inputName, String outputName) throws IOException {
+        Scanner scanner = new Scanner(new File(inputName));
+        Map<String, Set<String>> map = new TreeMap<>();
+        while (scanner.hasNextLine()) {
+            String t = scanner.nextLine();
+            if (!t.matches("[А-Я][а-я]+ [А-Я][а-я]+ - [А-Я][а-я]+ [0-9]+"))
+                throw new IllegalArgumentException("wrong format");
+            String[] data = t.split(" - ");
+            if (map.containsKey(data[1]))
+                map.get(data[1]).add(data[0]);
+            else {
+                Set<String> set = new TreeSet<>();
+                set.add(data[0]);
+                map.put(data[1], set);
             }
-            JavaTasks.addressWriter(outputName, map);
-        } catch (IOException e) {
-            e.printStackTrace();
         }
+        JavaTasks.addressWriter(outputName, map);
     }
 
-    private static void addressWriter(String outputName, Map<String, Set<String>> map) {
-        try {
-            FileWriter writer = new FileWriter(outputName);
-            for (String address : map.keySet()) {
-                StringBuilder temp = new StringBuilder(address).append(" - ").append(map.get(address).toArray()[0]);
-                if (map.get(address).size() > 1) {
-                    for (int i = 1; i < map.get(address).size(); i++) {
-                        temp.append(", ").append(map.get(address).toArray()[i]);
-                    }
+    private static void addressWriter(String outputName, Map<String, Set<String>> map) throws IOException {
+        FileWriter writer = new FileWriter(outputName);
+        for (String address : map.keySet()) {
+            StringBuilder temp = new StringBuilder(address).append(" - ").append(map.get(address).toArray()[0]);
+            if (map.get(address).size() > 1) {
+                for (int i = 1; i < map.get(address).size(); i++) {
+                    temp.append(", ").append(map.get(address).toArray()[i]);
                 }
-                writer.write(temp.toString() + "\n");
-                writer.flush();
             }
-        } catch (IOException e) {
-            e.printStackTrace();
+            writer.write(temp.toString() + "\n");
+            writer.flush();
         }
     }
 
@@ -176,31 +158,22 @@ public class JavaTasks {
      * 121.3
      */
 
-    // T = O(N logN), R = O(N)
-    static public void sortTemperatures(String inputName, String outputName) {
-        try {
-            Scanner scanner = new Scanner(new File(inputName));
-            ArrayList<Double> temperatures = new ArrayList<>();
-            while (scanner.hasNextLine()) {
-                temperatures.add(Double.parseDouble(scanner.nextLine()));
-            }
-            Collections.sort(temperatures);
-            JavaTasks.temperaturesWriter(outputName, temperatures);
-
-        } catch (IOException e) {
-            e.printStackTrace();
+    // T = O(N*logN), R = O(N)
+    static public void sortTemperatures(String inputName, String outputName) throws IOException {
+        Scanner scanner = new Scanner(new File(inputName));
+        List<Double> temperatures = new ArrayList<>();
+        while (scanner.hasNextLine()) {
+            temperatures.add(Double.parseDouble(scanner.nextLine()));
         }
+        Collections.sort(temperatures);
+        JavaTasks.temperaturesWriter(outputName, temperatures);
     }
 
-    static private void temperaturesWriter(String outputName, ArrayList<Double> temperatures) {
-        try {
-            FileWriter writer = new FileWriter(outputName);
-            for (Double element : temperatures) {
-                writer.write(element.toString() + "\n");
-                writer.flush();
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
+    static private void temperaturesWriter(String outputName, List<Double> temperatures) throws IOException {
+        FileWriter writer = new FileWriter(outputName);
+        for (Double element : temperatures) {
+            writer.write(element.toString() + "\n");
+            writer.flush();
         }
     }
 

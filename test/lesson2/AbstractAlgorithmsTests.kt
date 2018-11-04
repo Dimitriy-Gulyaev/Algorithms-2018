@@ -681,6 +681,8 @@ abstract class AbstractAlgorithmsTests {
                 JavaAlgorithms.baldaSearcher("input/balda_in1.txt", setOf("КАРДАМОН", "ЧАЙНИК", "ЧАШКА")))
         assertEquals(setOf("DOG", "FISH", "BONE"),
                 JavaAlgorithms.baldaSearcher("input/balda_in3.txt", setOf("DOG", "FISH", "BONE", "CAT")))
+        assertEquals(setOf(),
+                JavaAlgorithms.baldaSearcher("input/balda_in4.txt", setOf("PAPA")))
         try {
             lesson2.JavaAlgorithms.baldaSearcher("input/time_in4.txt", setOf("КАРДАМОН", "ЧАЙНИК", "ЧАШКА"))
         } catch (e: IllegalArgumentException) {

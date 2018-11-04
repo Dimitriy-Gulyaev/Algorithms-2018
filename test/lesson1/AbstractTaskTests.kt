@@ -10,7 +10,7 @@ abstract class AbstractTaskTests : AbstractFileTests() {
 
     protected fun sortTimes(sortTimes: (String, String) -> Unit) {
         try {
-            sortTimes("input/time_in1.txt", "temp.txt")
+            JavaTasks.sortTimes("input/time_in1.txt", "temp.txt")
             assertFileContent("temp.txt",
                     """
                      00:40:31
@@ -25,7 +25,7 @@ abstract class AbstractTaskTests : AbstractFileTests() {
             File("temp.txt").delete()
         }
         try {
-            sortTimes("input/time_in2.txt", "temp.txt")
+            JavaTasks.sortTimes("input/time_in2.txt", "temp.txt")
             assertFileContent("temp.txt",
                     """
                      00:00:00
@@ -35,20 +35,20 @@ abstract class AbstractTaskTests : AbstractFileTests() {
             File("temp.txt").delete()
         }
         try {
-            sortTimes("input/time_in3.txt", "temp.txt")
+            JavaTasks.sortTimes("input/time_in3.txt", "temp.txt")
             assertFileContent("temp.txt", File("input/time_out3.txt").readLines().joinToString(separator = "\n"))
         } finally {
             File("temp.txt").delete()
         }
         try {
-            lesson1.sortTimes("input/time_in4.txt", "temp.txt")
+            lesson1.JavaTasks.sortTimes("input/time_in4.txt", "temp.txt")
         } catch (e: IllegalArgumentException) {
             assertEquals("wrong format", e.message)
         } finally {
             File("temp.txt").delete()
         }
         try {
-            sortTimes("input/empty.txt", "temp.txt")
+            JavaTasks.sortTimes("input/empty.txt", "temp.txt")
             assertFileContent("temp.txt",
                     """
                 """.trimIndent()
@@ -61,7 +61,7 @@ abstract class AbstractTaskTests : AbstractFileTests() {
     protected fun sortAddresses(sortAddresses: (String, String) -> Unit) {
         // TODO: large test
         try {
-            sortAddresses("input/addr_in1.txt", "temp.txt")
+            JavaTasks.sortAddresses("input/addr_in1.txt", "temp.txt")
             assertFileContent("temp.txt",
                     """
                     Железнодорожная 3 - Петров Иван
@@ -73,7 +73,7 @@ abstract class AbstractTaskTests : AbstractFileTests() {
             File("temp.txt").delete()
         }
         try {
-            lesson1.sortAddresses("input/time_in4.txt", "temp.txt")
+            lesson1.JavaTasks.sortAddresses("input/time_in4.txt", "temp.txt")
         } catch (e: IllegalArgumentException) {
             assertEquals("wrong format", e.message)
         } finally {
