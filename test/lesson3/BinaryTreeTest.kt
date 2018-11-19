@@ -75,6 +75,28 @@ class BinaryTreeTest {
             }
             assertTrue(binarySet.checkInvariant())
         }
+        val list = mutableListOf<Int>()
+        for (i in 1..50) {
+            list.add(random.nextInt(500))
+        }
+        val treeSet = TreeSet<Int>()
+        val binarySet = create()
+        for (element in list) {
+            treeSet += element
+            binarySet += element
+        }
+        val toRemove = list[random.nextInt(list.size)]
+        treeSet.remove(toRemove)
+        binarySet.remove(toRemove)
+        println("Removing $toRemove from $list")
+        assertEquals<SortedSet<*>>(treeSet, binarySet, "After removal of $toRemove from $list")
+        assertEquals(treeSet.size, binarySet.size)
+        for (element in list) {
+            val inn = element != toRemove
+            assertEquals(inn, element in binarySet,
+                    "$element should be ${if (inn) "in" else "not in"} tree")
+        }
+        assertTrue(binarySet.checkInvariant())
     }
 
     @Test
@@ -108,6 +130,22 @@ class BinaryTreeTest {
             while (treeIt.hasNext()) {
                 assertEquals(treeIt.next(), binaryIt.next())
             }
+        }
+        val list = mutableListOf<Int>()
+        for (i in 1..40) {
+            list.add(random.nextInt(500))
+        }
+        val treeSet = TreeSet<Int>()
+        val binarySet = create()
+        for (element in list) {
+            treeSet += element
+            binarySet += element
+        }
+        val treeIt = treeSet.iterator()
+        val binaryIt = binarySet.iterator()
+        println("Traversing $list")
+        while (treeIt.hasNext()) {
+            assertEquals(treeIt.next(), binaryIt.next())
         }
     }
 
