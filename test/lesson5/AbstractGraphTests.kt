@@ -1,7 +1,6 @@
 package lesson5
 
 import lesson5.impl.GraphBuilder
-import org.junit.Assert
 import org.junit.jupiter.api.Assertions
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
