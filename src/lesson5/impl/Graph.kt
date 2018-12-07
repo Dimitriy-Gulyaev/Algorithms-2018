@@ -20,6 +20,7 @@ class GraphBuilder {
         override fun getEnd() = _end
 
         override fun getWeight() = weightField
+
     }
 
     private val vertices = mutableMapOf<String, Vertex>()
