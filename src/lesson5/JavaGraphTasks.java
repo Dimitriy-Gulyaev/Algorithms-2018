@@ -34,12 +34,13 @@ public class JavaGraphTasks {
      * связного графа ровно по одному разу
      */
 
-    // Трудоёмкость самого алгоритма T = O(V)
-    // Трудоёмкость обхода при проверке T = O(V + E)
-    // Ресурсоёмкость R = O(V)
-    // V - количество вершин в графе, E - количество рёбер в графе
+    // Трудоёмкость T = O(V + E), т.к. суммарно имеем С*V итераций на стеке (С - некий коэффициент, много меньший V),
+    // в которых в общей сумме имеется E итераций по рёбрам. Проверка на наличие эйлерова пути: V вызовов, E итераций
+    // по рёбрам, итого тоже О(V + E). Суммарная трудоёмкость: 2 * O(V + E) = O (V + E).
+    // Ресурсоёмкость R = O(V + E), т.к. храним и рёбра, и вершины.
+    // V - количество вершин в графе, E - количество рёбер в графе.
     public static List<Graph.Edge> findEulerLoop(Graph graph) {
-        Graph.Vertex vertex = (Graph.Vertex) graph.getVertices().toArray()[0];
+        Graph.Vertex vertex = graph.getVertices().iterator().next();
         if (!checkForEulerPath(graph, vertex)) return new ArrayList<>();
         List<Graph.Edge> edges = new ArrayList<>(graph.getEdges()); //Список всех рёбер для проверки на удалённые
         List<Graph.Edge> result = new ArrayList<>();
@@ -128,14 +129,12 @@ public class JavaGraphTasks {
      * J ------------ K
      */
 
-    // Трудоёмкость самого алгоритма T = O(V)
-    // Трудоёмкость обхода при проверке T = O(V + E)
-    // Ресурсоёмкость R = O(V)
+    // Трудоёмкость T = O(V + E), тут в целом ситуация такая же.
+    // Ресурсоёмкость R = O(V), рёбра отдельно не храним
     public static Graph minimumSpanningTree(Graph graph) {
-        List<Graph.Vertex> vertices = new ArrayList<>(graph.getVertices());
         GraphBuilder builder = new GraphBuilder();
         if (!checkIfConnectedGraph(graph)) return builder.build();
-        Graph.Vertex vertex = vertices.get(0);
+        Graph.Vertex vertex = graph.getVertices().iterator().next();
         List<Graph.Vertex> addedToGraph = new ArrayList<>();
         Stack<Graph.Vertex> stack = new Stack<>();
         stack.push(vertex);
@@ -165,18 +164,18 @@ public class JavaGraphTasks {
     // Проверка графа на связность
     private static boolean checkIfConnectedGraph(Graph graph) {
         List<Graph.Vertex> visited = new ArrayList<>();
-        Graph.Vertex vertex = (Graph.Vertex) graph.getVertices().toArray()[0];
-        return checkIfConnectedGraphRecursive(vertex, visited, graph);
+        Graph.Vertex vertex = graph.getVertices().iterator().next();
+        checkIfConnectedGraphRecursive(vertex, visited, graph);
+        return visited.size() == graph.getVertices().size();
     }
 
-    private static boolean checkIfConnectedGraphRecursive(Graph.Vertex vertex,
-                                                          List<Graph.Vertex> visited, Graph graph) {
+    private static void checkIfConnectedGraphRecursive(Graph.Vertex vertex,
+                                                       List<Graph.Vertex> visited, Graph graph) {
         visited.add(vertex);
         for (Graph.Vertex neighbor : graph.getNeighbors(vertex)) {
             if (!visited.contains(neighbor))
                 checkIfConnectedGraphRecursive(neighbor, visited, graph);
         }
-        return visited.size() == graph.getVertices().size();
     }
 
     /**
@@ -227,12 +226,11 @@ public class JavaGraphTasks {
         List<Graph.Vertex> vertices = new ArrayList<>(graph.getVertices());
         Set<Graph.Vertex> set1 = new HashSet<>();
         Set<Graph.Vertex> set2 = new HashSet<>();
-        Graph.Vertex firstVertex = (Graph.Vertex) graph.getVertices().toArray()[0];
-        Graph.Vertex secondVertex = (Graph.Vertex) graph.getConnections(firstVertex).keySet().toArray()[0];
+        Graph.Vertex firstVertex = graph.getVertices().iterator().next();
+        Graph.Vertex secondVertex = graph.getConnections(firstVertex).keySet().iterator().next();
         buildSet(firstVertex, set1, graph, null);
         buildSet(secondVertex, set2, graph, null);
-        //noinspection SuspiciousMethodCalls
-        if (vertices.indexOf(set1.toArray()[0]) < vertices.indexOf(set2.toArray()[0])) return set1;
+        if (vertices.indexOf(set1.iterator().next()) < vertices.indexOf(set2.iterator().next())) return set1;
         else return set2;
     }
 
@@ -307,8 +305,10 @@ public class JavaGraphTasks {
      * Ответ: A, E, J, K, D, C, H, G, B, F, I
      */
 
-    // Трудоёмкость T = O(V * (V + E))
-    // Ресурсоёмкость R = O(V)
+    // Трудоёмкость T = O(V!), т.к. в худшем случае, когда каждая вершина связана с каждой, решение сводится к
+    // перебору вариантов перестановок вершин.
+    // Ресурсоёмкость R = O((V - 1)!) = O(V!), поскольку храним для каждой вершины массив возможных путей (один на
+    // каждом шаге).
     public static Path longestSimplePath(Graph graph) {
         if (checkIfConnectedGraph(graph)) return longestSimplePathForConnectedComponent(graph);
         else {
@@ -324,12 +324,11 @@ public class JavaGraphTasks {
     private static Path longestSimplePathForConnectedComponent(Graph graph) {
         Set<Graph.Vertex> vertices = new HashSet<>(graph.getVertices());
         Path longestPath = new Path(new LinkedList<>(), 0);
+        Comparator<Path> c = Comparator.comparing(Path::getLength);
         for (Graph.Vertex vertex : vertices) {
-            Set<Graph.Vertex> visited = new HashSet<>();
             LinkedList<Graph.Vertex> path = new LinkedList<>();
             List<Path> paths = new ArrayList<>();
-            DepthFirstSearch(graph, visited, vertex, path, paths);
-            Comparator<Path> c = Comparator.comparing(Path::getLength);
+            DepthFirstSearch(graph, vertex, path, paths);
             paths.sort(c);
             Path localLongestPath = paths.get(paths.size() - 1);
             if (localLongestPath.compareTo(longestPath) > 0) longestPath = localLongestPath;
@@ -337,18 +336,17 @@ public class JavaGraphTasks {
         return longestPath;
     }
 
-    private static void DepthFirstSearch(Graph graph, Set<Graph.Vertex> visited, Graph.Vertex vertex,
+    private static void DepthFirstSearch(Graph graph, Graph.Vertex vertex,
                                          LinkedList<Graph.Vertex> path, List<Path> paths) {
-        visited.add(vertex);
         path.add(vertex);
         Set<Graph.Vertex> neighbours = new HashSet<>(graph.getConnections(vertex).keySet());
         int visitedNeighbours = 0;
         for (Graph.Vertex neighbour : neighbours) {
-            if (visited.contains(neighbour)) {
+            if (path.contains(neighbour)) {
                 visitedNeighbours++;
                 continue;
             }
-            DepthFirstSearch(graph, visited, neighbour, path, paths);
+            DepthFirstSearch(graph, neighbour, path, paths);
         }
         if (visitedNeighbours == neighbours.size()) paths.add(new Path(path, path.size() - 1));
     }
